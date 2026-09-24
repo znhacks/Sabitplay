@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Crown, Code2, Palette, ShieldCheck, Headphones, Terminal, ArrowUpRight } from "lucide-react";
 
 export default function OurTeam() {
@@ -14,12 +15,25 @@ export default function OurTeam() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#F5EFEB]/[0.02] blur-[140px] rounded-full pointer-events-none -z-10" />
 
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-[#FFFDF9] mb-4 [text-shadow:0_4px_20px_rgba(0,0,0,0.8)]">
+      <div className="text-center max-w-3xl mx-auto mb-16 relative">
+        {/* Logo watermark behind Sabit Family */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 -z-10 pointer-events-none opacity-25 select-none flex items-center justify-center">
+          <Image
+            src="/logo.png"
+            alt="Sabitplay Logo"
+            width={288}
+            height={288}
+            className="w-full h-full object-contain filter drop-shadow-[0_0_50px_rgba(245,239,235,0.45)] animate-pulse"
+            style={{ animationDuration: "5s" }}
+            priority
+          />
+        </div>
+
+        <h2 className="relative text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.03em] text-[#FFFDF9] mb-4 [text-shadow:0_4px_20px_rgba(0,0,0,0.8)]">
           Sabit Family
         </h2>
 
-        <p className="text-base sm:text-lg text-[#D8C5B2] leading-relaxed">
+        <p className="relative text-base sm:text-lg text-[#D8C5B2] leading-relaxed">
           The team united by passion, creativity, and craftsmanship.
         </p>
       </div>
