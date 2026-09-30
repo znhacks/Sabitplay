@@ -1,12 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowUpRight, Fish, Skull, Ghost, Play } from "lucide-react";
+import { ArrowUpRight, Fish, Skull, Ghost, Play, Shield } from "lucide-react";
 
 export default function OurProjects() {
   const [activeFilter, setActiveFilter] = useState("all");
 
   const games = [
+    {
+      id: "last-gate",
+      title: "Last Gate",
+      category: "action",
+      badge: "Action • Castle Defense",
+      status: "Playable on Web & Mobile",
+      tagline: "The kingdom's last line of defense rests in your hands!",
+      description: "A fast-paced 4-lane reflex castle defense game where you deflect demon fireballs into explosive chain reactions, unleash powerful character ultimates with Felix & Mella, and shepherd fleeing civilians to safety.",
+      coverImage: "https://img.itch.zone/aW1nLzMwNDA0NDM1LmpwZw==/original/hlYDAP.jpg",
+      platforms: ["HTML5 Web", "Mobile / Touch"],
+      tags: ["Godot", "Action", "Arcade", "Castle Defense", "2D"],
+      link: "https://sabitplay.itch.io/last-gate",
+      accentColor: "from-amber-500/20 via-orange-950/10 to-transparent",
+      badgeColor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+      icon: Shield
+    },
     {
       id: "bocah-fishing",
       title: "Bocah Fishing",
@@ -30,7 +46,7 @@ export default function OurProjects() {
       badge: "Visual Novel • Horror",
       status: "Windows & Android APK",
       tagline: "Can you survive?",
-      description: "A Psychological Horror Visual Novel where you’re trapped in a ruined laboratory with Ashy, a mysterious yandere girl who claims to have spread a deadly plague. Survive deadly Q&A sessions, manipulate emotions, calm her anger, and uncover multiple tragic or secret endings.",
+      description: "A Psychological Horror Visual Novel where you're trapped in a ruined laboratory with Ashy, a mysterious yandere girl who claims to have spread a deadly plague. Survive deadly Q&A sessions, manipulate emotions, calm her anger, and uncover multiple tragic or secret endings.",
       coverImage: "https://img.itch.zone/aW1nLzI5MzkxMzYwLmpwZw==/original/7qABb1.jpg",
       platforms: ["Windows", "Android APK"],
       tags: ["Psychological Horror", "Visual Novel", "Yandere", "Dating Sim"],
@@ -51,8 +67,8 @@ export default function OurProjects() {
       platforms: ["Windows", "Unity"],
       tags: ["Unity", "Pixel Art", "Horror", "Puzzle", "Platformer"],
       link: "https://sabitplay.itch.io/finalnightmare",
-      accentColor: "from-amber-500/20 via-orange-950/10 to-transparent",
-      badgeColor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+      accentColor: "from-purple-500/20 via-violet-950/10 to-transparent",
+      badgeColor: "bg-purple-500/10 text-purple-300 border-purple-500/20",
       icon: Ghost
     }
   ];
@@ -62,7 +78,7 @@ export default function OurProjects() {
     : games.filter((g) => g.category === activeFilter);
 
   return (
-    <section id="our-projects" className="relative py-32 px-4 max-w-6xl mx-auto z-10 scroll-mt-20">
+    <section id="our-projects" className="relative py-32 px-4 max-w-7xl mx-auto z-10 scroll-mt-20">
       
       {/* Background soft ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-96 bg-[radial-gradient(ellipse_at_center,rgba(245,239,235,0.03)_0%,rgba(4,4,5,0)_70%)] blur-3xl pointer-events-none -z-10" />
@@ -83,6 +99,7 @@ export default function OurProjects() {
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#090A0C]/80 border border-[#F5EFEB]/15 self-start md:self-auto backdrop-blur-xl">
           {[
             { id: "all", label: "All Games" },
+            { id: "action", label: "Action & Arcade" },
             { id: "simulation", label: "Simulation" },
             { id: "horror", label: "Horror & Story" },
           ].map((tab) => (
@@ -102,7 +119,7 @@ export default function OurProjects() {
       </div>
 
       {/* Game Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredGames.map((game) => {
           const Icon = game.icon;
           return (
