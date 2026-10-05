@@ -50,9 +50,9 @@ export default function StudioFooter() {
             </button>
             <button
               onClick={() => scrollTo("our-projects")}
-              className="hover:text-[#FFFDF9] transition-colors cursor-pointer"
+              className="hover:text-[#FFFDF9] transition-colors cursor-pointer py-1"
             >
-              Our Project
+              Our Games
             </button>
             <a
               href="https://sabitplay.itch.io/"

@@ -24,7 +24,7 @@ export default function InkLab() {
     if (!ctx) return;
 
     let animId: number;
-    let drops = [...inkDrops];
+    const drops = [...inkDrops];
 
     const render = () => {
       ctx.fillStyle = "rgba(5, 5, 7, 0.15)";

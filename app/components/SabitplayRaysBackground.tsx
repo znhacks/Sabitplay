@@ -1,151 +1,105 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll, useReducedMotion } from "framer-motion";
 
 export default function SabitplayRaysBackground() {
+  const shouldReduceMotion = useReducedMotion();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { damping: 25, stiffness: 60, mass: 0.5 };
+  const springConfig = { damping: 30, stiffness: 50, mass: 0.5 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
-  const parallaxX = useTransform(smoothX, [-1, 1], [25, -25]);
-  const parallaxY = useTransform(smoothY, [-1, 1], [20, -20]);
+  const parallaxX = useTransform(smoothX, [-1, 1], [18, -18]);
+  const parallaxY = useTransform(smoothY, [-1, 1], [14, -14]);
 
-  // Fade out beams smoothly as user scrolls down away from the title/hero
   const { scrollY } = useScroll();
   const scrollOpacity = useTransform(scrollY, [0, 450], [1, 0]);
 
   useEffect(() => {
+    // Disable parallax tracking on touch/mobile devices to save battery and CPU cycles
+    if (typeof window === "undefined" || window.matchMedia("(pointer: coarse)").matches) {
+      return;
+    }
+
+    let rafId: number | null = null;
     const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth) * 2 - 1;
-      const y = (e.clientY / innerHeight) * 2 - 1;
-      mouseX.set(x);
-      mouseY.set(y);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const { innerWidth, innerHeight } = window;
+        const x = (e.clientX / innerWidth) * 2 - 1;
+        const y = (e.clientY / innerHeight) * 2 - 1;
+        mouseX.set(x);
+        mouseY.set(y);
+        rafId = null;
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [mouseX, mouseY]);
 
   return (
     <motion.div 
       style={{ opacity: scrollOpacity }}
-      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-[#040405]"
+      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-[#040405] will-change-transform"
     >
-      
-      {/* 1. Base Pitch Obsidian Background */}
       <div className="absolute inset-0 bg-[#040405]" />
 
-      {/* 2. Deep Warm Cream Ambient Core Glow (Darkened & Contained) */}
-      <motion.div
-        animate={{
-          scale: [1, 1.12, 1],
-          opacity: [0.12, 0.20, 0.12],
-        }}
-        transition={{
-          duration: 7.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute h-[700px] w-[700px] rounded-full bg-[#F5EFEB] blur-[180px]"
+      {/* GPU-efficient radial glow (no heavy Gaussian blur kernel) */}
+      <div
+        className="absolute h-[650px] w-[650px] rounded-full bg-[radial-gradient(circle_at_center,rgba(245,239,235,0.14)_0%,rgba(245,239,235,0.04)_45%,transparent_70%)] pointer-events-none"
       />
 
-      {/* 3. Volumetric Rotated Cream Beam Container */}
+      {/* Volumetric rotated beams container */}
       <motion.div
         style={{
-          x: parallaxX,
-          y: parallaxY,
+          x: shouldReduceMotion ? 0 : parallaxX,
+          y: shouldReduceMotion ? 0 : parallaxY,
         }}
-        animate={{
-          opacity: [0.85, 0.98, 0.85],
-          scale: [1.35, 1.45, 1.35],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute flex -rotate-[42deg] items-center gap-10 md:gap-14"
+        className="absolute flex -rotate-[42deg] items-center gap-8 md:gap-14 will-change-transform"
       >
-        {/* Far Left Cream Beam */}
-        <div className="h-[1200px] w-2 rounded-full bg-gradient-to-b from-transparent via-[#4D4238] to-transparent blur-[2px] opacity-30" />
+        {/* Outer Left Beam - hidden on tiny mobile screens for performance */}
+        <div className="hidden sm:block h-[1100px] w-2 rounded-full bg-gradient-to-b from-transparent via-[#4D4238]/60 to-transparent opacity-30" />
 
-        {/* Outer Left Cream Beam */}
+        {/* Mid Left Beam */}
         <motion.div
-          animate={{ y: [-10, 10, -10] }}
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-          className="h-[1350px] w-4 rounded-full bg-gradient-to-b from-transparent via-[#7A6B5C] to-transparent blur-[3px] opacity-50"
+          animate={shouldReduceMotion ? undefined : { y: [8, -8, 8] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="h-[1250px] w-3 md:w-5 rounded-full bg-gradient-to-b from-transparent via-[#8A7969]/60 to-transparent opacity-50 will-change-transform"
         />
 
-        {/* Mid Left Cream Beam */}
+        {/* Main Center Beam */}
         <motion.div
-          animate={{ y: [12, -12, 12] }}
-          transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-          className="h-[1450px] w-12 rounded-full bg-gradient-to-b from-transparent via-[#B3A290] to-transparent blur-[4px] opacity-75"
-        />
-
-        {/* 🌟 CENTER MAIN BEAM (Extra Wide Cream ~210px with Specular Spine) */}
-        <motion.div
-          animate={{
-            y: [-20, 20, -20],
-          }}
-          transition={{
-            duration: 8.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative h-[1650px] w-52 sm:w-60 rounded-full bg-gradient-to-b from-transparent via-[#F5EFEB] to-transparent blur-[6px] shadow-[0_0_90px_rgba(245,239,235,0.6)] flex items-center justify-center"
+          animate={shouldReduceMotion ? undefined : { y: [-10, 10, -10] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="relative h-[1450px] w-36 sm:w-52 rounded-full bg-gradient-to-b from-transparent via-[#F5EFEB]/85 to-transparent flex items-center justify-center will-change-transform shadow-[0_0_50px_rgba(245,239,235,0.35)]"
         >
-          {/* Inner Specular Core Cream Spine */}
-          <motion.div
-            animate={{
-              opacity: [0.8, 1, 0.8],
-              scaleY: [0.95, 1.05, 0.95]
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="h-[1300px] w-16 rounded-full bg-gradient-to-b from-transparent via-[#FFFDF9] to-transparent blur-[2px]"
-          />
+          {/* Inner Specular Core Spine */}
+          <div className="h-[1100px] w-10 sm:w-14 rounded-full bg-gradient-to-b from-transparent via-[#FFFDF9] to-transparent opacity-90" />
         </motion.div>
 
-        {/* Mid Right Cream Beam */}
+        {/* Mid Right Beam */}
         <motion.div
-          animate={{ y: [-12, 12, -12] }}
-          transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-          className="h-[1450px] w-10 rounded-full bg-gradient-to-b from-transparent via-[#B3A290] to-transparent blur-[4px] opacity-75"
+          animate={shouldReduceMotion ? undefined : { y: [-8, 8, -8] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="h-[1250px] w-3 md:w-5 rounded-full bg-gradient-to-b from-transparent via-[#8A7969]/60 to-transparent opacity-50 will-change-transform"
         />
 
-        {/* Outer Right Cream Beam */}
-        <motion.div
-          animate={{ y: [10, -10, 10] }}
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-          className="h-[1350px] w-4 rounded-full bg-gradient-to-b from-transparent via-[#7A6B5C] to-transparent blur-[3px] opacity-50"
-        />
-
-        {/* Far Right Cream Beam */}
-        <div className="h-[1200px] w-2 rounded-full bg-gradient-to-b from-transparent via-[#4D4238] to-transparent blur-[2px] opacity-30" />
+        {/* Outer Right Beam - hidden on tiny mobile screens */}
+        <div className="hidden sm:block h-[1100px] w-2 rounded-full bg-gradient-to-b from-transparent via-[#4D4238]/60 to-transparent opacity-30" />
       </motion.div>
 
-      {/* 4. Deep Darkened Radial Vignette Overlay (Darker & More Contrast) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_15%,rgba(4,4,5,0.6)_50%,#040405_85%)]" />
+      {/* Radial vignette overlay for contrast */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(4,4,5,0.65)_60%,#040405_90%)] pointer-events-none" />
 
-      {/* 5. Seamless bottom gradient fade into pitch black */}
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#040405] via-[#040405]/80 to-transparent pointer-events-none" />
-
-      {/* 6. Subtle Matte Texture */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-        }}
-      />
+      {/* Bottom gradient fade into section */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#040405] to-transparent pointer-events-none" />
     </motion.div>
   );
 }
